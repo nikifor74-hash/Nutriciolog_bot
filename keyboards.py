@@ -14,18 +14,18 @@ def get_gender_keyboard() -> InlineKeyboardMarkup:
 def get_plan_navigation_keyboard(current_page: int, total_pages: int) -> InlineKeyboardMarkup:
     """
     Клавиатура навигации по дням рациона.
-    current_page: текущая страница (0 = дни 1-2, 1 = дни 3-4 и т.д.)
-    total_pages: всего страниц (для 7 дней это 4 страницы: 1-2, 3-4, 5-6, 7)
+    current_page: текущая страница (0 = День 1, 1 = День 2 и т.д.)
+    total_pages: всего страниц (7 дней = 7 страниц)
     """
     builder = InlineKeyboardBuilder()
 
     # Кнопка "Назад"
     if current_page > 0:
-        builder.button(text="⬅️ Назад", callback_data=f"nav_prev_{current_page}")
+        builder.button(text="⬅️ Пред. день", callback_data=f"nav_prev_{current_page}")
 
     # Кнопка "Вперед"
     if current_page < total_pages - 1:
-        builder.button(text="Вперед ➡️", callback_data=f"nav_next_{current_page}")
+        builder.button(text="След. день ➡️", callback_data=f"nav_next_{current_page}")
 
     # Кнопка "Начать заново"
     builder.button(text="🔄 Новый расчет", callback_data="restart_bot")

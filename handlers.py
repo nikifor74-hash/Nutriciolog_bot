@@ -96,12 +96,14 @@ async def generate_and_send_plan(message: types.Message, user_data: dict, state:
     try:
         full_plan_text = await gigachat.generate_diet_plan(user_data)
 
-        # Парсим текст на страницы (по 2 дня на страницу)
-        days = re.split(r'(### DAY \d+ ###)', full_plan_text)
+        # ✅ Парсим текст на страницы (по 1 дню на страницу)
+        # Ищем паттерны ### ДЕНЬ X ###
+        days = re.split(r'(### ДЕНЬ \d+ ###)', full_plan_text)
 
         pages = []
         current_page_content = ""
 
+        # Пропускаем первый пустой элемент, если он есть
         start_index = 1 if days and days[0] == '' else 0
         i = start_index
 
@@ -109,15 +111,14 @@ async def generate_and_send_plan(message: types.Message, user_data: dict, state:
             day_header = days[i]
             day_content = days[i + 1] if i + 1 < len(days) else ""
 
-            current_page_content += f"{day_header}\n{day_content}\n\n"
-
-            if any(x in day_header for x in ["DAY 2", "DAY 4", "DAY 6"]) or i + 2 >= len(days):
-                pages.append(current_page_content)
-                current_page_content = ""
+            # Каждый день - отдельная страница
+            current_page_content = f"{day_header}\n{day_content}\n"
+            pages.append(current_page_content)
 
             i += 2
 
         if not pages:
+            # Фоллбэк если парсинг не сработал
             pages = [full_plan_text]
 
         user_plans_cache[message.from_user.id] = {
@@ -148,12 +149,13 @@ async def send_plan_page(message: types.Message, page_index: int):
         return
 
     text = pages[page_index]
-    header = f"📅 Рацион питания (Дни {(page_index * 2) + 1}-{min((page_index + 1) * 2, 7)})\n\n"
+    # ✅ Обновляем заголовок для одного дня
+    header = f"📅 Рацион питания (День {page_index + 1} из {total})\n\n"
 
     await message.answer(
         header + text,
         reply_markup=get_plan_navigation_keyboard(page_index, total),
-        parse_mode=None
+        parse_mode=None  # Отправляем как plain text
     )
 
 
