@@ -1,8 +1,10 @@
-from gigachat import GigaChat
-from config import Config
-from logger import log
 import asyncio
 import os
+
+from gigachat import GigaChat
+
+from config import Config
+from logger import log
 
 # Системный промт для нейросети
 SYSTEM_PROMPT = """

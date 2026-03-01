@@ -1,6 +1,8 @@
 import os
 import sys
+
 from dotenv import load_dotenv
+
 from logger import log
 
 # Явно указываем путь к файлу .env относительно текущего файла
@@ -21,24 +23,20 @@ class Config:
     BOT_TOKEN: str = os.getenv("BOT_TOKEN")
     GIGA_API_KEY: str = os.getenv("GIGA_API_KEY")
     GIGA_CERT_PATH: str = os.getenv("GIGA_CERT_PATH")
+    DATABASE_PATH: str = os.getenv("DATABASE_PATH", "data/nutrition_bot.db")
 
     # Валидация при загрузке
     if not BOT_TOKEN:
         log.error("Критическая ошибка: BOT_TOKEN не найден в окружении!")
         print("\n❌ ОШИБКА: Переменная BOT_TOKEN пуста или не найдена.")
-        print("1. Проверьте, что файл .env лежит в корне проекта.")
-        print("2. Проверьте, что нет пробелов вокруг знака '=' в файле .env.")
-        print("3. Убедитесь, что токен скопирован полностью из @BotFather.\n")
         sys.exit(1)
 
     if not GIGA_API_KEY:
         log.error("Критическая ошибка: GIGA_API_KEY не найден в окружении!")
         print("\n❌ ОШИБКА: Переменная GIGA_API_KEY пуста или не найдена.")
-        print("1. Получите API ключ в кабинете разработчика Сбера.")
-        print("2. Добавьте его в файл .env\n")
         sys.exit(1)
 
-    # Проверка сертификата (опционально, может быть не обязателен)
+    # Проверка сертификата (опционально)
     if GIGA_CERT_PATH and not os.path.exists(GIGA_CERT_PATH):
         log.warning(f"Сертификат не найден по пути: {GIGA_CERT_PATH}")
         log.warning("Работа с GigaChat может быть невозможна без сертификата")

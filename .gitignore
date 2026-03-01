@@ -1,20 +1,141 @@
-# Python-generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
-
-# Virtual environments
-.venv
-
-# IDE
-.idea/
-.vscode/
-
-# Config
+# ============================================
+# 🔐 Чувствительные данные (НИКОГДА не коммитить)
+# ============================================
 .env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+certs/
+!certs/.gitkeep
 
-# Logs
+# ============================================
+# 🗄️ База данных и файлы данных
+# ============================================
+data/*.db
+data/*.sqlite3
+data/*.sqlite
+*.db
+*.sqlite
+*.sqlite3
+
+# ============================================
+# 🐍 Python
+# ============================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ============================================
+# 📦 Виртуальное окружение (uv / venv)
+# ============================================
+.venv/
+venv/
+ENV/
+env/
+.env/
+.python-version
+uv.lock
+
+# ============================================
+# 💻 PyCharm / IntelliJ IDEA
+# ============================================
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+*.swp
+*.swo
+*~
+
+# ============================================
+# 🪟 macOS
+# ============================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ============================================
+# 🐧 Linux
+# ============================================
+*~
+.fuse_hidden*
+.Trash-*
+.nfs*
+
+# ============================================
+# 📝 Логи и временные файлы
+# ============================================
 logs/
+*.log
+tmp/
+temp/
+.cache/
+
+# ============================================
+# 🧪 Тестирование
+# ============================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ============================================
+# 📊 Jupyter Notebook
+# ============================================
+.ipynb_checkpoints/
+
+# ============================================
+# 📬 Telegram bot specific
+# ============================================
+# Сессионные файлы (если используете)
+*.session
+*.session-journal
+
+# ============================================
+# ✅ Что НУЖНО коммитить (исключения)
+# ============================================
+# Оставьте пустую папку data/ для клонирования
+!data/.gitkeep
+
+# Оставьте пустую папку certs/ для клонирования
+!certs/.gitkeep
+
+# Конфигурационные файлы (без секретов)
+config.py
+pyproject.toml
+requirements.txt

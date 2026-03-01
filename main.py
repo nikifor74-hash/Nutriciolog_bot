@@ -1,20 +1,23 @@
 import asyncio
+import atexit
 import logging
+
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
+
 from config import Config
-from logger import log
+from database import db
 from handlers import router
+from logger import log
 
 
 async def main():
     """Основная функция запуска бота."""
     log.info("Запуск бота 'Нутрициолог'...")
 
-    # ✅ Инициализируем хранилище для FSM (память)
-    # Для продакшена лучше использовать RedisStorage
+    # Инициализируем хранилище для FSM
     storage = MemoryStorage()
 
     # Инициализация бота
@@ -23,7 +26,7 @@ async def main():
         default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN)
     )
 
-    # ✅ Передаем storage и key в Dispatcher
+    # Передаем storage и key в Dispatcher
     dp = Dispatcher(storage=storage, key=Config.BOT_TOKEN)
 
     # Удаляем вебхук (чтобы работал polling)
@@ -36,6 +39,9 @@ async def main():
     # Регистрируем роутер с хендлерами
     dp.include_router(router)
 
+    # Регистрируем функцию закрытия БД при остановке
+    atexit.register(lambda: db.close())
+
     try:
         log.info("Запуск polling режима...")
         await dp.start_polling(bot)
@@ -44,6 +50,8 @@ async def main():
     except Exception as e:
         log.error(f"Критическая ошибка в работе бота: {e}")
     finally:
+        # Корректное закрытие сессии и БД
+        db.close()
         await bot.session.close()
         log.info("Сессия бота закрыта")
 

@@ -1,4 +1,4 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
@@ -11,11 +11,51 @@ def get_gender_keyboard() -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-def get_plan_navigation_keyboard(current_page: int, total_pages: int) -> InlineKeyboardMarkup:
+def get_favorites_keyboard(has_plan: bool = False) -> InlineKeyboardMarkup:
     """
-    Клавиатура навигации по дням рациона.
-    current_page: текущая страница (0 = День 1, 1 = День 2 и т.д.)
-    total_pages: всего страниц (7 дней = 7 страниц)
+    Клавиатура для главного меню.
+    """
+    builder = InlineKeyboardBuilder()
+
+    if has_plan:
+        builder.button(text="📋 Использовать последний план", callback_data="use_last_plan")
+        builder.button(text="✨ Создать новый план", callback_data="create_new_plan")
+    else:
+        builder.button(text="🚀 Начать расчет", callback_data="create_new_plan")
+
+    builder.button(text="⭐ Избранное", callback_data="view_favorites")
+    builder.adjust(1, 1)
+
+    return builder.as_markup()
+
+
+def get_favorites_list_keyboard(favorites: list) -> InlineKeyboardMarkup:
+    """
+    Клавиатура со списком избранных планов.
+
+    Args:
+        favorites: Список словарей с данными планов из БД
+    """
+    builder = InlineKeyboardBuilder()
+
+    for fav in favorites:
+        plan_id = fav['id']
+        plan_date = fav['created_at'][:10]
+        builder.button(
+            text=f"📄 План #{plan_id} от {plan_date}",
+            callback_data=f"view_favorite_{plan_id}"
+        )
+
+    builder.button(text="🔙 Назад в меню", callback_data="restart_bot")
+    builder.adjust(1)
+
+    return builder.as_markup()
+
+
+def get_plan_navigation_keyboard(current_page: int, total_pages: int,
+                                 is_favorite: bool = False, plan_id: int = None) -> InlineKeyboardMarkup:
+    """
+    Клавиатура навигации по дням рациона с кнопкой избранного.
     """
     builder = InlineKeyboardBuilder()
 
@@ -27,8 +67,18 @@ def get_plan_navigation_keyboard(current_page: int, total_pages: int) -> InlineK
     if current_page < total_pages - 1:
         builder.button(text="След. день ➡️", callback_data=f"nav_next_{current_page}")
 
-    # Кнопка "Начать заново"
-    builder.button(text="🔄 Новый расчет", callback_data="restart_bot")
+    # Кнопка "Избранное" (только если есть plan_id)
+    if plan_id:
+        if is_favorite:
+            builder.button(text="💔 Удалить из избранного",
+                           callback_data=f"toggle_favorite_remove_{plan_id}_{current_page}")
+        else:
+            builder.button(text="⭐ В избранное",
+                           callback_data=f"toggle_favorite_add_{plan_id}_{current_page}")
 
-    builder.adjust(2, 1)  # Расположение кнопок
+    # Кнопка "Начать заново"
+    builder.button(text="🔄 Меню", callback_data="restart_bot")
+
+    builder.adjust(2, 2, 1)
+
     return builder.as_markup()
